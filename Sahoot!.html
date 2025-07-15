@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sahoot!</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1a1a40, #2b2b80);
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1, h2, h3 {
+    color: #fff;
+  }
+
+  #quiz-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #2b2b80;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+
+  #quiz-container button {
+    display: block;
+    margin: 10px auto;
+    padding: 15px 20px;
+    width: 80%;
+    max-width: 400px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #3a3ad6;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  #quiz-container button:hover {
+    background-color: #5050ff;
+    transform: scale(1.05);
+  }
+
+  #quiz-container button.selected {
+    background-color: #ffd700;
+    color: #222;
+  }
+
+  #quiz-container button.correct {
+    background-color: #00ff99;
+    color: #222;
+  }
+
+  #quiz-container button.wrong {
+    background-color: #ff4c4c;
+    color: #fff;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  #score {
+    font-size: 24px;
+    margin-top: 30px;
+  }
+  @media (max-width: 600px) {
+  #quiz-container button, #playerName, #player-name-form button {
+    width: 90%;
+    font-size: 16px;
+  }
+}
+
+.timer {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #00ffcc;
+}
+
+.score-animate {
+  animation: pulse 0.4s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+</style>
+
+</head>
+<body>
+<h1 style="
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: white;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+  font-family: 'Segoe UI', sans-serif;
+">
+  Sahoot!
+</h1>
+
+  <div id="player-name-form">
+    <h2>Input Nama Pemain</h2>
+    <input type="text" id="playerName" placeholder="Masukkan Nama Anda" />
+    <button onclick="heroName()">Start Quiz</button>
+  </div>
+
+  <div id="quiz-container"></div>
+  <div id="score" style="display: none;"></div>
+
+  <script>
+    const questions = [
+  { q: "Apa itu algoritma?", a: ["Bahasa pemrograman", "Langkah-langkah logis untuk menyelesaikan masalah", "Jenis database", "Sistem operasi"], ans: 1 },
+  { q: "Apa kepanjangan dari CPU?", a: ["Central Process Unit", "Central Processing Unit", "Computer Primary Unit", "Central Performance Unit"], ans: 1 },
+  { q: "Struktur data yang menggunakan prinsip LIFO adalah?", a: ["Queue", "Stack", "Array", "Linked List"], ans: 1 },
+  { q: "SQL digunakan untuk?", a: ["Mendesain UI", "Mengatur protokol jaringan", "Mengelola basis data", "Membuat animasi"], ans: 2 },
+  { q: "Jenis database yang menyimpan data dalam bentuk tabel adalah?", a: ["Relasional", "NoSQL", "Hierarkis", "Flat File"], ans: 0 },
+  { q: "Fungsi utama dari sistem operasi adalah?", a: ["Menjalankan internet", "Mengatur sumber daya komputer", "Menulis kode", "Menghapus virus"], ans: 1 },
+  { q: "Bahasa pemrograman yang dijalankan di browser secara default adalah?", a: ["Python", "PHP", "Java", "JavaScript"], ans: 3 },
+  { q: "Apa yang dimaksud dengan IP Address?", a: ["Identitas server", "Alamat logika dalam jaringan", "Protokol Internet", "Kode sumber data"], ans: 1 },
+  { q: "OSI Layer terdiri dari berapa lapisan?", a: ["5", "6", "7", "8"], ans: 2 },
+  { q: "HTTP adalah protokol untuk?", a: ["Transfer file besar", "Pengiriman email", "Menjalankan aplikasi", "Mengakses halaman web"], ans: 3 },
+
+  { q: "Bahasa yang digunakan untuk membuat halaman web statis adalah?", a: ["Java", "CSS", "HTML", "Python"], ans: 2 },
+  { q: "Manakah yang termasuk jenis software open-source?", a: ["Windows", "macOS", "Linux", "iOS"], ans: 2 },
+  { q: "Apa itu firewall?", a: ["Antivirus", "Perangkat keras jaringan", "Sistem keamanan jaringan", "Penyimpan data"], ans: 2 },
+  { q: "Apa fungsi DNS?", a: ["Mengatur trafik jaringan", "Menyimpan data", "Mengubah nama domain menjadi IP", "Menganalisa jaringan"], ans: 2 },
+  { q: "Array adalah?", a: ["Tipe data tunggal", "Kumpulan variabel sejenis", "Sistem backup", "Protokol komunikasi"], ans: 1 },
+  { q: "Manakah yang merupakan tipe data?", a: ["int", "for", "print", "loop"], ans: 0 },
+  { q: "Bahasa pemrograman untuk data science yang populer?", a: ["HTML", "Python", "C", "PHP"], ans: 1 },
+  { q: "Manakah dari berikut ini yang termasuk NoSQL DB?", a: ["MySQL", "MongoDB", "PostgreSQL", "SQLite"], ans: 1 },
+  { q: "Apa itu compiler?", a: ["Alat kompresi", "Penerjemah kode program ke bahasa mesin", "Sistem pemindahan data", "Database tool"], ans: 1 },
+  { q: "Manakah yang merupakan contoh IDE?", a: ["Photoshop", "Word", "VS Code", "WinRAR"], ans: 2 },
+
+  { q: "Perintah dasar untuk mencetak di Python adalah?", a: ["echo", "printf", "print", "println"], ans: 2 },
+  { q: "TCP/IP digunakan untuk?", a: ["Keamanan sistem", "Routing file", "Protokol komunikasi internet", "Menjalankan server"], ans: 2 },
+  { q: "Sistem bilangan yang digunakan komputer adalah?", a: ["Desimal", "Biner", "Oktal", "Hexadesimal"], ans: 1 },
+  { q: "Bit adalah?", a: ["8 byte", "1 byte", "Unit terkecil data", "Satuan waktu prosesor"], ans: 2 },
+  { q: "Fungsi utama RAM?", a: ["Menyimpan data permanen", "Meningkatkan kualitas grafis", "Menyimpan data sementara", "Menjalankan printer"], ans: 2 },
+  { q: "DDoS adalah bentuk serangan yang?", a: ["Meminta password", "Mengacak DNS", "Membanjiri server", "Menyalin file"], ans: 2 },
+  { q: "HTML merupakan singkatan dari?", a: ["Hyper Tool Markup Language", "HyperText Markup Language", "Hyperlink Text Language", "HyperText Manipulation Layer"], ans: 1 },
+  { q: "Fungsi utama dari Git?", a: ["Desain UI", "Deploy ke server", "Versi kontrol kode", "Analisis data"], ans: 2 },
+  { q: "Node.js digunakan untuk?", a: ["Frontend", "Game design", "Server-side JavaScript", "Database"], ans: 2 },
+  { q: "Manakah dari berikut ini adalah framework CSS?", a: ["Bootstrap", "React", "Flask", "Angular"], ans: 0 },
+
+  { q: "Apa kepanjangan dari URL?", a: ["Universal Routing Line", "Uniform Resource Locator", "Unified Resource Language", "Unique Row Locator"], ans: 1 },
+  { q: "Perintah SELECT digunakan dalam?", a: ["HTML", "JavaScript", "SQL", "CSS"], ans: 2 },
+  { q: "Loop yang tidak pernah berhenti disebut?", a: ["Dead loop", "While loop", "Infinite loop", "Null loop"], ans: 2 },
+  { q: "Class dalam OOP digunakan untuk?", a: ["Menghitung data", "Menentukan tampilan", "Membuat objek", "Membuat tabel"], ans: 2 },
+  { q: "Constructor adalah?", a: ["Fungsi awal yang dijalankan saat objek dibuat", "Fungsi looping", "Fungsi pembanding", "Fungsi logika"], ans: 0 },
+  { q: "Bahasa yang sering dipakai untuk machine learning?", a: ["C", "Python", "Java", "SQL"], ans: 1 },
+  { q: "Router berfungsi untuk?", a: ["Menghubungkan antar jaringan", "Memperbesar sinyal", "Mengubah IP", "Menyimpan file"], ans: 0 },
+  { q: "Primary key adalah?", a: ["Field unik di tabel database", "Relasi antar tabel", "Nama tabel", "Jenis data"], ans: 0 },
+  { q: "Framework JavaScript untuk frontend?", a: ["Laravel", "Flask", "React", "Django"], ans: 2 },
+  { q: "Enkripsi berfungsi untuk?", a: ["Menghapus data", "Mengamankan data", "Menyalin file", "Mempercepat program"], ans: 1 },
+
+  { q: "Bahasa markup adalah?", a: ["Python", "HTML", "Java", "C++"], ans: 1 },
+  { q: "Manakah yang digunakan untuk debugging?", a: ["Antivirus", "Debugger", "Optimizer", "Proxy"], ans: 1 },
+  { q: "Manakah yang termasuk loop di JavaScript?", a: ["do...while", "do...next", "repeat...until", "next...then"], ans: 0 },
+  { q: "Apa itu API?", a: ["Antarmuka aplikasi", "Bahasa pemrograman", "Format penyimpanan", "Protokol backup"], ans: 0 },
+  { q: "Python dikembangkan oleh?", a: ["Bill Gates", "Guido van Rossum", "Mark Zuckerberg", "Tim Berners-Lee"], ans: 1 },
+  { q: "Apa itu bug?", a: ["Virus", "Kesalahan dalam kode", "Library tambahan", "Tool program"], ans: 1 },
+  { q: "Fungsi dari CDN adalah?", a: ["Distribusi konten cepat", "Menjalankan database", "Backup kode", "Filter data"], ans: 0 },
+  { q: "Manakah tipe protokol email?", a: ["TCP", "POP3", "DNS", "FTP"], ans: 1 },
+  { q: "Extension file JavaScript adalah?", a: [".js", ".java", ".script", ".jsx"], ans: 0 },
+  { q: "Sistem manajemen database terkenal?", a: ["MongoDB", "MySQL", "PostgreSQL", "Semua benar"], ans: 3 }
+    ];
+
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let playerName = "";
+    let timerInterval;
+    let timeLeft = 20;
+
+    function heroName() {
+      playerName = document.getElementById('playerName').value.trim();
+      if (!playerName) {
+        alert("Nama tidak boleh kosong.");
+        return;
+      }
+
+      document.getElementById('player-name-form').style.display = 'none';
+      document.getElementById('quiz-container').innerHTML = `<h1>${playerName}, selamat datang di kuis!</h1>`;
+
+      setTimeout(setupQuiz, 1000);
+    }
+
+    function setupQuiz() {
+      currentQuestions = [];
+      score = 0;
+      currentQuestionIndex = 0;
+
+      const usedIndices = new Set();
+      while (currentQuestions.length < 10) {
+        const randomIndex = Math.floor(Math.random() * questions.length);
+        if (!usedIndices.has(randomIndex)) {
+          usedIndices.add(randomIndex);
+          currentQuestions.push(questions[randomIndex]);
+        }
+      }
+
+      showQuestion();
+    }
+
+    let selected = null;
+
+ function showQuestion() {
+  const question = currentQuestions[currentQuestionIndex];
+  const container = document.getElementById('quiz-container');
+
+  container.innerHTML = `
+    <div style="animation: fadeIn 0.5s ease;">
+      <div class="timer" id="timer">Waktu: 20 detik</div>
+      <h2>Soal ${currentQuestionIndex + 1} dari 10</h2>
+      <h3>${question.q}</h3>
+      ${question.a.map((opt, i) => `<button onclick="selectAnswer(${i})" id="opt-${i}">${opt}</button>`).join('')}
+      <button onclick="submitAnswer()">Submit</button>
+    </div>
+  `;
+
+  startTimer();
+}
+
+function startTimer() {
+  timeLeft = 20;
+  updateTimerDisplay();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitAnswer(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const timerEl = document.getElementById('timer');
+  if (timerEl) timerEl.textContent = `Waktu: ${timeLeft} detik`;
+}
+
+
+    function selectAnswer(index) {
+      selected = index;
+      const buttons = document.querySelectorAll('#quiz-container button[id^="opt-"]');
+      buttons.forEach(btn => btn.classList.remove('selected'));
+      document.getElementById(`opt-${index}`).classList.add('selected');
+    }
+
+ function submitAnswer(auto = false) {
+  clearInterval(timerInterval);
+
+  const correct = selected === currentQuestions[currentQuestionIndex].ans;
+  const optionButtons = document.querySelectorAll('#quiz-container button[id^="opt-"]');
+
+  optionButtons.forEach((btn, index) => {
+    btn.disabled = true;
+    if (!auto && index === selected) {
+      btn.classList.add(correct ? "correct" : "wrong");
+    }
+    if (index === currentQuestions[currentQuestionIndex].ans) {
+      btn.classList.add("correct");
+    }
+  });
+
+  const audio = document.getElementById(correct ? "sound-correct" : "sound-wrong");
+  audio.play();
+
+  if (!auto && correct) {
+    score++;
+    document.getElementById('score')?.classList?.add("score-animate");
+  }
+
+  setTimeout(() => {
+    selected = null;
+    currentQuestionIndex++;
+
+    if (currentQuestionIndex < currentQuestions.length) {
+      showQuestion();
+    } else {
+      endQuiz();
+    }
+  }, 1500);
+}
+
+    function endQuiz() {
+  clearInterval(timerInterval);
+  document.getElementById('quiz-container').innerHTML = `
+    <h2>Kuis Selesai!</h2>
+    <p class="score-animate">Skor ${playerName}: ${score} dari ${currentQuestions.length}</p>
+    <button onclick="location.reload()">Main Lagi</button>
+  `;
+}
+
+  </script>
+<audio id="sound-correct" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_d824fda542.mp3?filename=correct-2-46134.mp3" preload="auto"></audio>
+<audio id="sound-wrong" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f574204fbb.mp3?filename=error-2-36058.mp3" preload="auto"></audio>
+<audio id="bg-music" src="https://cdn.pixabay.com/download/audio/2022/12/27/audio_3e2c97ef7e.mp3?filename=fun-happy-pop-126041.mp3" loop autoplay></audio>
+
+</body>
+</html>
