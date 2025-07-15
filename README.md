@@ -34,5 +34,5 @@ Tautan Proyek
 - Live Preview (Netlify):  
   [https://sunny-malabi-6064f4.netlify.app](https://sunny-malabi-6064f4.netlify.app)
 
-Catatan
+**Catatan** 
 Sebagian besar soal dan logika aplikasi ini dikembangkan menggunakan bantuan AI LLM GPT-4 (berbasis IBM Granite) untuk mengoptimalkan waktu pengembangan, pembuatan soal, dan validasi jawaban.
